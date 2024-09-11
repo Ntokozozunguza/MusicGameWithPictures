@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Game</title>
+    <style>
+/* General Body Styles */
+body {
+    background-color: #8A2BE2; /* Purple background */
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Main Container Styles */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Question Styles */
+.question {
+    margin: 20px;
+    font-size: 24px;
+    color: #8A2BE2;
+}
+
+/* Ad Banner Styles */
+.ad-banner {
+    margin: 20px 0;
+    background-color: #FFD700;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+}
+
+/* Color Block Styles */
+.color-block {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Input Container Styles */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Input Styles */
+input[type="text"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #FFD700;
+    background-color: #1E90FF;
+    color: white;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #FF6347;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #FF4500;
+}
+
+/* Hidden Class Styles */
+.hidden {
+    display: none;
+}
+
+/* Next Button Styles */
+.next-button {
+    display: none;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #32CD32;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Leaderboard Styles */
+#leaderboard {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#leaderboard th, #leaderboard td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#leaderboard th {
+    background-color: #8A2BE2;
+    color: white;
+}
+
+#leaderboard tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#leaderboard tbody tr:hover {
+    background-color: #ddd;
+}
+</style>
+</head>
+<body>
+    <div class="main-container">
+        <div id="nameInputPage">
+            <div class="question">Enter your name to start the game:</div>
+            <div class="input-container">
+                <input type="text" id="userName" placeholder="Enter your name">
+                <input type="submit" value="Start Game" onclick="startGame()">
+            </div>
+        </div>
+        
+        <!-- Game Content -->
+        <div class="game-page hidden" id="gamePage">
+            <div class="question" id="question">What is the color of this block?</div>
+            <div class="ad-banner">
+                <p>Ad Banner Here</p>
+            </div>
+            <div class="color-block" id="block1"></div>
+            <div class="input-container">
+                <input type="text" id="userAnswer" placeholder="Enter your answer">
+                <input type="submit" value="Submit" onclick="submitAnswer()">
+            </div>
+            <button class="next-button" id="nextButton" onclick="nextPage()">Next</button>
+        </div>
+
+        <!-- Modal for feedback -->
+        <div id="feedbackModal" class="modal">
+            <div class="modal-content">
+                <p id="feedbackText"></p>
+            </div>
+        </div>
+
+        <!-- Leaderboard Page -->
+        <div class="hidden" id="leaderboardPage">
+            <div class="question">Leaderboard</div>
+            <table id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Leaderboard entries will be dynamically added here -->
+                </tbody>
+            </table>
+            <button onclick="restartGame()">Restart Game</button>
+        </div>
+
+        <!-- Special Questions Page -->
+        <div class="hidden" id="specialQuestionsPage">
+            <div class="question" id="specialQuestion">Solve the math problem:</div>
+            <div class="input-container">
+                <input type="text" id="specialAnswer" placeholder="Enter your answer">
+                <input type="submit" value="Submit" onclick="submitSpecialAnswer()">
+            </div>
+            <button class="next-button" id="specialNextButton" onclick="finishSpecialQuestions()">Finish</button>
+        </div>
+    </div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+    let currentPage = 1;
+    let userName = '';
+    let userScore = 0;
+    const leaderboard = [];
+    let specialQuestions = [];
+    let specialAnswers = {};
+
+    function startGame() {
+        userName = document.getElementById('userName').value.trim();
+        if (userName === "") {
+            alert("Please enter your name.");
+            return;
+        }
+
+        // Hide name input page, show game page
+        document.getElementById('nameInputPage').classList.add('hidden');
+        document.getElementById('gamePage').classList.remove('hidden');
+    }
+
+    function submitAnswer() {
+        const answer = document.getElementById('userAnswer').value.trim();
+        const feedbackText = document.getElementById('feedbackText');
+
+        if (answer === "") {
+            feedbackText.textContent = "Please enter a valid answer.";
+            document.getElementById('feedbackModal').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('feedbackModal').style.display = 'none';
+            }, 2000);
+            return;
+        }
+
+        feedbackText.textContent = `Great job, ${userName}! You answered: "${answer}"`;
+        document.getElementById('feedbackModal').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }, 2000);
+
+        document.querySelector('.input-container').classList.add('hidden');
+        document.getElementById('nextButton').style.display = 'inline-block';
+    }
+
+    function nextPage() {
+        currentPage++;
+        
+        if (currentPage <= 5) {
+            document.getElementById('question').textContent = `Question ${currentPage}`;
+            document.getElementById('block1').style.backgroundImage = `url('https://via.placeholder.com/200/${currentPage}')`;
+            document.querySelector('.input-container').classList.remove('hidden');
+            document.getElementById('userAnswer').value = '';
+            document.getElementById('nextButton').style.display = 'none';
+        } else if (currentPage === 6) {
+            // Special Questions Page
+            document.getElementById('gamePage').classList.add('hidden');
+            document.getElementById('specialQuestionsPage').classList.remove('hidden');
+            generateSpecialQuestions();
+        } else if (currentPage === 7) {
+            // Leaderboard page
+            document.getElementById('specialQuestionsPage').classList.add('hidden');
+            document.getElementById('leaderboardPage').classList.remove('hidden');
+            addToLeaderboard();
+            displayLeaderboard();
+        }
+    }
+
+    function generateSpecialQuestions() {
+        // Generate 5 random math questions and store answers
+        specialQuestions = [];
+        specialAnswers = {};
+        for (let i = 0; i < 5; i++) {
+            const a = Math.floor(Math.random() * 100) + 1;
+            const b = Math.floor(Math.random() * 100) + 1;
+            const op = Math.random() > 0.5 ? '+' : '-';
+            const question = `${a} ${op} ${b}`;
+            const answer = op === '+' ? a + b : a - b;
+            specialQuestions.push(question);
+            specialAnswers[question] = answer;
+        }
+        document.getElementById('specialQuestion').textContent = specialQuestions[0];
+        document.getElementById('specialNextButton').style.display = 'none';
+    }
+
+    function submitSpecialAnswer() {
+        const answer = parseInt(document.getElementById('specialAnswer').value.trim(), 10);
+        const currentQuestion = document.getElementById('specialQuestion').textContent;
+
+        if (isNaN(answer)) {
+            alert("Please enter a valid number.");
+            return;
+        }
+
+        if (answer === specialAnswers[currentQuestion]) {
+            userScore++;
+        }
+
+        specialQuestions.shift();
+        if (specialQuestions.length > 0) {
+            document.getElementById('specialQuestion').textContent = specialQuestions[0];
+            document.getElementById('specialAnswer').value = '';
+        } else {
+            document.getElementById('specialNextButton').style.display = 'inline-block';
+        }
+    }
+
+    function finishSpecialQuestions() {
+        document.getElementById('specialQuestionsPage').classList.add('hidden');
+        document.getElementById('leaderboardPage').classList.remove('hidden');
+        addToLeaderboard();
+        displayLeaderboard();
+    }
+
+    function addToLeaderboard() {
+        leaderboard.push({ name: userName, score: userScore });
+    }
+
+    function displayLeaderboard() {
+        let tbody = document.querySelector('#leaderboard tbody');
+        tbody.innerHTML = '';
+        leaderboard.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${entry.name}</td><td>${entry.score}</td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    function restartGame() {
+        currentPage = 1;
+        userScore = 0;
+        document.getElementById('leaderboardPage').classList.add('hidden');
+        document.getElementById('nameInputPage').classList.remove('hidden');
+        document.getElementById('userName').value = '';
+        document.getElementById('leaderboard').querySelector('tbody').innerHTML = '';
+    }
+
+    // Attach functions to window object to make them available in HTML
+    window.startGame = startGame;
+    window.submitAnswer = submitAnswer;
+    window.nextPage = nextPage;
+    window.submitSpecialAnswer = submitSpecialAnswer;
+    window.finishSpecialQuestions = finishSpecialQuestions;
+    window.restartGame = restartGame;
+});
+</script>
+</body>
+</html>

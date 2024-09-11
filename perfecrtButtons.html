@@ -1,0 +1,210 @@
+Perfect buttons 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Game</title>
+    <style>
+        body {
+            background-color: #8A2BE2; /* Purple background */
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin: 20px;
+            font-size: 24px;
+            color: #8A2BE2;
+        }
+        .ad-banner {
+            margin: 20px 0;
+            background-color: #FFD700;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+        }
+        .color-block {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+        }
+        #block1 {
+            background-image: url('https://via.placeholder.com/200');
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #FFD700;
+            background-color: #1E90FF;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #FF6347;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #FF4500;
+        }
+        .hidden {
+            display: none;
+        }
+        .next-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #32CD32;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="question" id="question">What is the color of this block?</div>
+        <div class="ad-banner">
+            <p>Ad Banner Here</p>
+        </div>
+        <div class="color-block" id="block1"></div>
+        <div class="input-container">
+            <input type="text" id="userAnswer" placeholder="Enter your answer">
+            <input type="submit" value="Submit" onclick="submitAnswer()">
+        </div>
+        <button class="next-button" id="nextButton" onclick="nextPage()">Next</button>
+    </div>
+
+    <!-- Modal for feedback -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <p id="feedbackText"></p>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        
+        function submitAnswer() {
+    const answer = document.getElementById('userAnswer').value.trim();
+    const feedbackText = document.getElementById('feedbackText');
+
+    // Form validation: Check if the input is empty
+    if (answer === "") {
+        feedbackText.textContent = "Please enter a valid answer.";
+        document.getElementById('feedbackModal').style.display = 'block';
+
+        // Hide modal after 2 seconds
+        setTimeout(function() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }, 2000);
+
+        return; // Stop the function if input is empty
+    }
+
+    // Continue with the game if the input is not empty
+    feedbackText.textContent = `Wow, your answer is great! I think it's "${answer}". This is a comment from the game.`;
+
+    // Show feedback modal
+    document.getElementById('feedbackModal').style.display = 'block';
+
+    // Hide modal after 2 seconds
+    setTimeout(function() {
+        document.getElementById('feedbackModal').style.display = 'none';
+    }, 2000);
+
+    // Hide input and submit button after submission
+    document.querySelector('.input-container').classList.add('hidden');
+    document.getElementById('nextButton').style.display = 'inline-block';
+}
+      
+        function nextPage() {
+            currentPage++;
+
+            // Update page content based on current page
+            if (currentPage === 2) {
+                document.getElementById('question').textContent = "What is the name of this fruit?";
+                document.getElementById('block1').style.backgroundImage = "url('https://via.placeholder.com/200/ff6347')"; // Image for page 2
+            } else if (currentPage === 3) {
+                document.getElementById('question').textContent = "What is the color of the sky?";
+                document.getElementById('block1').style.backgroundImage = "url('https://via.placeholder.com/200/1e90ff')"; // Image for page 3
+            } else if (currentPage === 4) {
+                document.getElementById('question').textContent = "What is the color of the sky?";
+                document.getElementById('block1').style.backgroundImage = "url('https://via.placeholder.com/200/1e90ff')"; // Image for page 3
+            } else if (currentPage === 5) {
+                document.getElementById('question').textContent = "What is the color of the sky?";
+                document.getElementById('block1').style.backgroundImage = "url('https://via.placeholder.com/200/1e90ff')"; // Image for page 3
+            } else if (currentPage === 6) {
+                document.getElementById('question').textContent = "What is the color of the sky?";
+                document.getElementById('block1').style.backgroundImage = "url('https://via.placeholder.com/200/1e90ff')"; // Image for page 3
+            }
+
+            // Reset input container
+            document.querySelector('.input-container').classList.remove('hidden');
+            document.getElementById('userAnswer').value = '';
+            document.getElementById('nextButton').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('feedbackModal')) {
+                document.getElementById('feedbackModal').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
